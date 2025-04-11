@@ -55,19 +55,25 @@ public class EmployeeService {
 
     /** 従業員の更新処理 */
     @Transactional
-    public ErrorKinds update(Employee employee) {
+    public ErrorKinds update(Employee employee,String code) {
+    	Employee employeeBefore = findByCode(code);
+    	if(!"".equals(employee.getPassword())) {
+    	     // パスワードチェック
+            ErrorKinds result = employeePasswordCheck(employee);
+            if (ErrorKinds.CHECK_OK != result) {
+                return result;
+            }
+            employeeBefore.setPassword(employee.getPassword());
+    	}
 
- 
-        // 対象従業員の取得
-        Employee existingEmployee = findByCode(employee.getCode());
+
 
         // 更新内容のセット
-        existingEmployee.setName(employee.getName());
-        existingEmployee.setRole(employee.getRole());
-        existingEmployee.setPassword(employee.getPassword());
-        existingEmployee.setUpdatedAt(LocalDateTime.now());
+    	employeeBefore.setName(employee.getName());
+    	employeeBefore.setRole(employee.getRole());
+    	employeeBefore.setUpdatedAt(LocalDateTime.now());
 
-        employeeRepository.save(existingEmployee);
+        employeeRepository.save(employeeBefore);
         return ErrorKinds.SUCCESS;
     }
 

@@ -103,7 +103,7 @@ public class EmployeeController {
     public String edit(@PathVariable("code") String code, Model model) {
         Employee employee = employeeService.findByCode(code);
         model.addAttribute("employee", employee);
-        return "employees/edit";  // 更新用のHTMLファイル（例：update.html）に遷移
+        return "employees/edit";  // 更新用のHTMLファイル
     }
 
 
@@ -112,19 +112,10 @@ public class EmployeeController {
                          @Validated @ModelAttribute Employee employee,
                          BindingResult res, Model model) {
 
-        // 氏名が空白かチェック
-        if ("".equals(employee.getName())) {
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
-                    "氏名を入力してください");
-            return "employees/edit";
-        }
 
-        // パスワード空白チェック
-        if ("".equals(employee.getPassword())) {
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
-            return "employees/edit";
-        }
+
+
+
 
         // 入力チェック
         if (res.hasErrors()) {
@@ -132,7 +123,7 @@ public class EmployeeController {
         }
 
         try {
-            ErrorKinds result = employeeService.update(employee);
+            ErrorKinds result = employeeService.update(employee,code);
 
             if (ErrorMessage.contains(result)) {
                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
