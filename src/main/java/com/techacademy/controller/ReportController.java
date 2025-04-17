@@ -56,7 +56,11 @@ public class ReportController {
 // 日報新規登録画面
 	@GetMapping(value = "/add")
 	public String create(@ModelAttribute Report report, @AuthenticationPrincipal UserDetail userDetail, Model model) {
-		model.addAttribute("employee", userDetail.getEmployee());
+	if(userDetail != null) {
+		report = new Report();
+		report.setEmployee(userDetail.getEmployee());
+	}
+		model.addAttribute("report",report);
 
 		return "report/new";
 	}
@@ -68,8 +72,8 @@ public class ReportController {
 
 		// 入力チェック
 		if (res.hasErrors()) {
-			model.addAttribute("employee", userDetail.getEmployee());
-			return "report/new";
+
+			return create(report,null,model);
 		}
 
 		try {
@@ -114,7 +118,7 @@ public class ReportController {
 		ErrorKinds result = reportService.update(report, userDetail.getEmployee(), id);
 
 		// 「既に登録されている日付」のエラー対応
-		if (result == ErrorKinds.DATECHECK_ERROR) {
+		if (result == ErrorKinds.DUPLICATE_ERROR) {
 			model.addAttribute("dateError", "既に登録されている日付です");
 			return "report/edit";
 		}

@@ -38,11 +38,11 @@ public class ReportService {
 		return report;
 
 	}
-		// ★ ここに追加：従業員から日報一覧取得
-		public List<Report> findByEmployee(Employee employee) {
-		    return reportRepository.findByEmployee(employee);
-		}
 
+	// ★ ここに追加：従業員から日報一覧取得
+	public List<Report> findByEmployee(Employee employee) {
+		return reportRepository.findByEmployee(employee);
+	}
 
 	// 日報保存
 	@Transactional
@@ -69,13 +69,19 @@ public class ReportService {
 	@Transactional
 	public ErrorKinds update(Report report, Employee employee, Integer id) {
 		Report reportBefore = findById(id);
+		List<Report> reportList = findByEmployee(reportBefore.getEmployee());
 
-		// その従業員と日付で既に日報が登録されているかチェック
-		List<Report> reportList = reportRepository.findByReportDateAndEmployee(report.getReportDate(), employee);
+		// 同じ日付ならOK
+		if (!report.getReportDate().equals(reportBefore.getReportDate())) {
+			// 違う日付ならNG
+			// 画面から受け取った日付と、テーブルから取得した日付が一致した場合はNG
+			for (Report dupReport : reportList) {
+				if (dupReport.getReportDate().equals(report.getReportDate())) {
+					return ErrorKinds.DUPLICATE_ERROR;
+				}
 
-		// 一件でも存在したらエラー
-		if (!reportList.isEmpty()) {
-			return ErrorKinds.DATECHECK_ERROR;
+			}
+
 		}
 
 		// エラーがない場合は更新処理
@@ -89,31 +95,27 @@ public class ReportService {
 		return ErrorKinds.SUCCESS;
 	}
 
-
 	// ★ ここに追加：UserDetailなしのシンプルな削除
 	@Transactional
 	public void delete(Integer id) {
-	    Report report = findById(id);
-	    if (report != null) {
-	        report.setUpdatedAt(LocalDateTime.now());
-	        report.setDeleteFlg(true);
-	    }
+		Report report = findById(id);
+		if (report != null) {
+			report.setUpdatedAt(LocalDateTime.now());
+			report.setDeleteFlg(true);
+		}
 
 	}
 
+	// 日報削除
+	@Transactional
+	public ErrorKinds delete(Integer id, UserDetail userDetail) {
 
-    // 日報削除
-    @Transactional
-    public ErrorKinds delete(Integer id, UserDetail userDetail) {
+		Report report = findById(id);
+		LocalDateTime now = LocalDateTime.now();
+		report.setUpdatedAt(now);
+		report.setDeleteFlg(true);
 
-
-        Report report = findById(id);
-        LocalDateTime now = LocalDateTime.now();
-         report.setUpdatedAt(now);
-        report.setDeleteFlg(true);
-
-        return ErrorKinds.SUCCESS;
-    }
-
+		return ErrorKinds.SUCCESS;
+	}
 
 }
