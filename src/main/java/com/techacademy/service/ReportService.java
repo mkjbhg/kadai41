@@ -38,6 +38,11 @@ public class ReportService {
 		return report;
 
 	}
+		// ★ ここに追加：従業員から日報一覧取得
+		public List<Report> findByEmployee(Employee employee) {
+		    return reportRepository.findByEmployee(employee);
+		}
+
 
 	// 日報保存
 	@Transactional
@@ -83,5 +88,32 @@ public class ReportService {
 		reportRepository.save(report);
 		return ErrorKinds.SUCCESS;
 	}
+
+
+	// ★ ここに追加：UserDetailなしのシンプルな削除
+	@Transactional
+	public void delete(Integer id) {
+	    Report report = findById(id);
+	    if (report != null) {
+	        report.setUpdatedAt(LocalDateTime.now());
+	        report.setDeleteFlg(true);
+	    }
+
+	}
+
+
+    // 日報削除
+    @Transactional
+    public ErrorKinds delete(Integer id, UserDetail userDetail) {
+
+
+        Report report = findById(id);
+        LocalDateTime now = LocalDateTime.now();
+         report.setUpdatedAt(now);
+        report.setDeleteFlg(true);
+
+        return ErrorKinds.SUCCESS;
+    }
+
 
 }

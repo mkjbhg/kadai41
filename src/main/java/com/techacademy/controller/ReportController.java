@@ -108,6 +108,8 @@ public class ReportController {
 			return "report/edit";
 		}
 
+		 report.setId(id);
+
 		// 日報更新処理
 		ErrorKinds result = reportService.update(report, userDetail.getEmployee(), id);
 
@@ -118,6 +120,25 @@ public class ReportController {
 		}
 
 		// 成功時
-		return "redirect:/report/list";
+		return "redirect:/report";
 	}
+
+
+	// 従業員削除処理
+	@PostMapping(value = "/{id}/delete")
+	public String delete(@PathVariable("id") Integer id, @AuthenticationPrincipal UserDetail userDetail,
+			Model model) {
+
+		ErrorKinds result = reportService.delete(id, userDetail);
+
+
+		if (ErrorMessage.contains(result)) {
+			model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+			model.addAttribute("report", reportService.findById(id));
+			return detail(id, model);
+		}
+
+		return "redirect:/report";
+	}
+
 }
