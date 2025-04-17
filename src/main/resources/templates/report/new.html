@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{common/header :: head_fragment(title='日報 新規登録')}"></head>
+
+
+<body class="h-100 overflow-hidden">
+    <div class="row h-100">
+        <div class="h-100 p-3 mb-2 bg-dark text-white col-sm-2">
+            <nav th:replace="common/side :: copy"></nav>
+        </div>
+
+        <div class="mt-3 h-100 col-sm-10">
+            <!-- コンテンツ -->
+            <div class="container-fluid p-0">
+                <h1 class="h3 mb-3">日報 新規登録</h1>
+            </div>
+			           <div class="mb-3 col-12 col-xxl-6">
+			                <div class="col-xl-12">
+			                    <div class="card">
+			                        <div class="card-body mb-5">
+			                            <form th:action="@{/report/add}" th:object="${report}" method="post">
+
+			                                <div class="mb-3">
+			                                    <label for="reportDate" class="form-label">日付</label>
+			                                    <input type="date" class="form-control" th:field="*{reportDate}" />
+			                                </div>
+
+			                                <div class="mb-3">
+			                                    <label class="form-label">氏名</label>
+			                                    <input type="text" class="form-control" th:value="${employee.name}" readonly />
+			                                    <input type="hidden" th:field="*{employee}" th:value="${employee.code}" />
+			                                </div>
+
+			                                <div class="mb-3">
+			                                    <label for="title" class="form-label">タイトル</label>
+			                                    <input type="text" class="form-control" th:field="*{title}" />
+			                                </div>
+
+			                                <div class="mb-3">
+			                                    <label for="content" class="form-label">内容</label>
+			                                    <textarea class="form-control" rows="8" th:field="*{content}"></textarea>
+			                                </div>
+
+			                                <div class="mt-4">
+			                                    <button type="submit" class="btn btn-primary">登録</button>
+			                                    <a th:href="@{/report}" class="btn btn-secondary">戻る</a>
+			                                </div>
+
+
+
+
+			                            </form>
+
+										<!-- 重複登録エラーメッセージ -->
+										<div class="mt-3 text-danger" th:if="${datecheckError}" th:text="${datecheckError}"></div>
+										<div class="mt-3 text-danger" th:if="${error}" th:text="${error}"></div>
+
+
+
+
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+
+			</body>
+
+			</html>
